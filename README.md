@@ -1,4 +1,4 @@
-# airtech-flight
+# Airtech-flight
 Airtech-flight is an application for managing flight booking system.
 
 ## Table of Contents
