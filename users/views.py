@@ -1,28 +1,23 @@
 from django.http import Http404
+from django.contrib.auth import authenticate
 from django.contrib.auth.signals import user_logged_in
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from rest_framework_jwt.settings import api_settings
 
 from .models import User
 from .serializers import UserSerializer
-
-jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+from .helpers import get_token
 
 
 # Create your views here.
-class Register(APIView):
+class RegisterView(APIView):
     """
     Register a new user
 
     Arguments:
-        APIView {serializer} -- API view serializer
-
-    Returns:
-        User -- User data
+        APIView {view} -- rest_framework API view
     """
 
     permission_classes = (AllowAny,)
@@ -32,16 +27,54 @@ class Register(APIView):
 
         if serializer.is_valid():
             saved_user = serializer.save()
-            payload = jwt_payload_handler(saved_user)
-            token = jwt_encode_handler(payload)
+            token = get_token(saved_user)
             user_logged_in.send(sender=saved_user.__class__, request=request, user=saved_user)
 
             return Response({
-                    'status': 'Success',
-                    'message': 'User registered',
-                    'data': {
-                        'token': token
-                    }
-                },
-                status=status.HTTP_201_CREATED)
+                'status': 'Success',
+                'message': 'User registered',
+                'data': {
+                    'token': token
+                }
+            },
+            status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(APIView):
+    """Login a user
+
+    Arguments:
+        APIView {view} -- rest_framework API view
+    """
+
+    permission_classes = (AllowAny,)
+
+    def post(self, request, format='json'):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        if email is None or password is None:
+            return Response({
+                'status': 'Error',
+                'message': 'Please provide both email and password',
+            },
+            status=status.HTTP_400_BAD_REQUEST)
+
+        existing_user = authenticate(request, email=email, password=password)
+        if existing_user is not None:
+            token = get_token(existing_user)
+            user_logged_in.send(sender=existing_user.__class__, request=request, user=existing_user)
+
+            return Response({
+                'status': 'Success',
+                'message': 'Use logged in',
+                'data': {
+                    'token': token
+                }
+            }, status=status.HTTP_200_OK)
+        return Response({
+            'status': 'Error',
+            'message': 'Username or password incorrect',
+        },
+        status=status.HTTP_401_UNAUTHORIZED)
