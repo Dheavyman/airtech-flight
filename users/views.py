@@ -102,6 +102,7 @@ class ProfilePhotoView(APIView):
         serializer = ImageSerializer(User.objects.get(pk=pk), data=request.data)
 
         if serializer.is_valid():
+            request.user.passport_photo.delete()
             serializer.save()
 
             return Response({
