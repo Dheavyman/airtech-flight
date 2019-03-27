@@ -86,7 +86,11 @@ class LoginView(APIView):
 
 
 class ProfilePhotoView(APIView):
+    """Profile photo
 
+    Arguments:
+        APIView {view} -- rest_framework API view
+    """
     def put(self, request, pk, format='json'):
         if request.user.id != pk:
             return Response({
