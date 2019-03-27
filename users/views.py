@@ -126,7 +126,7 @@ class ProfilePhotoView(APIView):
             user.passport_photo.delete()
             return Response({
                 'status': 'Success',
-                'message': 'User passport photo deleted'
+                'message': 'Passport photo deleted'
             },
             status=status.HTTP_200_OK)
         return Response({
