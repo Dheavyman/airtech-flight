@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, CharField, URLField
+from rest_framework.serializers import ModelSerializer, CharField, ImageField
 from .models import User
 
 from .helpers import validate_name
@@ -7,7 +7,7 @@ from .helpers import validate_name
 class UserSerializer(ModelSerializer):
     first_name = CharField(validators=[validate_name])
     last_name = CharField(validators=[validate_name])
-    passport_photo = URLField(required=False)
+    passport_photo = ImageField(required=False)
 
     class Meta:
         model = User
@@ -22,3 +22,14 @@ class UserSerializer(ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+
+
+class ImageSerializer(ModelSerializer):
+    """Image serializer
+
+    Arguments:
+        ModelSerializer {serializer} -- Rest framework model serializer
+    """
+    class Meta:
+        model = User
+        fields = ('id', 'passport_photo', 'updated_at')

@@ -55,9 +55,10 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=150)
     phone_number = models.CharField(validators=(phone_validator,), max_length=16, unique=True)
     address = models.TextField()
-    passport_photo = models.URLField()
+    passport_photo = models.ImageField(upload_to='profile_pics/%Y/%m/%d/')
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']

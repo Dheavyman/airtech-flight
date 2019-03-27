@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 
 from .models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, ImageSerializer
 from .helpers import get_token
 
 
@@ -38,7 +38,12 @@ class RegisterView(APIView):
                 }
             },
             status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            'status': 'Error',
+            'message': 'Could not register user',
+            'error': serializer.errors,
+        },
+        status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
@@ -72,9 +77,38 @@ class LoginView(APIView):
                 'data': {
                     'token': token
                 }
-            }, status=status.HTTP_200_OK)
+            },
+            status=status.HTTP_200_OK)
         return Response({
             'status': 'Error',
             'message': 'Username or password incorrect',
         },
         status=status.HTTP_401_UNAUTHORIZED)
+
+class ProfilePhotoView(APIView):
+
+    def put(self, request, pk, format='json'):
+        if request.user.id != pk:
+            return Response({
+                'status': 'Error',
+                'message': 'Request forbidden'
+            },
+            status=status.HTTP_403_FORBIDDEN)
+
+        serializer = ImageSerializer(User.objects.get(pk=pk), data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({
+                'status': 'Success',
+                'message': 'Passport photo updated',
+                'data': serializer.data
+            },
+            status=status.HTTP_200_OK)
+        return Response({
+            'status': 'Error',
+            'message': 'Could not update passport photo',
+            'error': serializer.errors
+        },
+        status=status.HTTP_400_BAD_REQUEST)
