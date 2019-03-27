@@ -11,7 +11,6 @@ from .serializers import UserSerializer, ImageSerializer
 from .helpers import get_token
 
 
-# Create your views here.
 class RegisterView(APIView):
     """
     Register a new user
@@ -85,13 +84,14 @@ class LoginView(APIView):
         },
         status=status.HTTP_401_UNAUTHORIZED)
 
+
 class ProfilePhotoView(APIView):
 
     def put(self, request, pk, format='json'):
         if request.user.id != pk:
             return Response({
                 'status': 'Error',
-                'message': 'Request forbidden'
+                'message': 'Request forbidden, not users profile'
             },
             status=status.HTTP_403_FORBIDDEN)
 
@@ -112,3 +112,25 @@ class ProfilePhotoView(APIView):
             'error': serializer.errors
         },
         status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format='json'):
+        user = request.user
+        if user.id != pk:
+            return Response({
+                'status': 'Error',
+                'message': 'Request forbidden, not users passport photo'
+            },
+            status=status.HTTP_403_FORBIDDEN)
+
+        if user.passport_photo:
+            user.passport_photo.delete()
+            return Response({
+                'status': 'Success',
+                'message': 'User passport photo deleted'
+            },
+            status=status.HTTP_200_OK)
+        return Response({
+            'status': 'Error',
+            'message': 'User does not have a passport_photo'
+        },
+        status=status.HTTP_404_NOT_FOUND)
