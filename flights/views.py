@@ -7,17 +7,6 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, SAFE_METHOD
 from .models import Flight
 from .serializers import FlightSerializer
 
-def get_flight_or_404(pk):
-    try:
-        flight = Flight.objects.get(pk=pk)
-    except Flight.DoesNotExist:
-        return Response({
-            'status': 'Error',
-            'message': 'Flight not found'
-        },
-        status=status.HTTP_404_NOT_FOUND)
-    return flight
-
 
 class IsAdminUserOrReadOnly(IsAdminUser):
     """Grant permission to only admin to perform POST, PUT and DELETE requests
@@ -82,7 +71,15 @@ class FlightDetailView(APIView):
     permission_classes = (IsAuthenticated, IsAdminUserOrReadOnly)
 
     def get(self, request, pk, format='json'):
-        flight = get_flight_or_404(pk)
+        try:
+            flight = Flight.objects.get(pk=pk)
+        except Flight.DoesNotExist:
+            return Response({
+                'status': 'Error',
+                'message': 'Flight not found'
+            },
+            status=status.HTTP_404_NOT_FOUND)
+
         serializer = FlightSerializer(flight)
 
         return Response({
@@ -93,7 +90,15 @@ class FlightDetailView(APIView):
         status=status.HTTP_200_OK)
 
     def put(self, request, pk, format='json'):
-        flight = get_flight_or_404(pk)
+        try:
+            flight = Flight.objects.get(pk=pk)
+        except Flight.DoesNotExist:
+            return Response({
+                'status': 'Error',
+                'message': 'Flight not found'
+            },
+            status=status.HTTP_404_NOT_FOUND)
+
         serializer = FlightSerializer(flight, data=request.data, partial=True)
 
         if serializer.is_valid():
@@ -111,3 +116,21 @@ class FlightDetailView(APIView):
             'error': serializer.errors
         },
         status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format='json'):
+        try:
+            flight = Flight.objects.get(pk=pk)
+        except Flight.DoesNotExist:
+            return Response({
+                'status': 'Error',
+                'message': 'Flight not found'
+            },
+            status=status.HTTP_404_NOT_FOUND)
+
+        flight.delete()
+
+        return Response({
+            'status': 'Success',
+            'message': 'Flight deleted'
+        },
+        status=status.HTTP_200_OK)
