@@ -10,7 +10,7 @@ class FlightSerializer(ModelSerializer):
     """Flight serializer
 
     Arguments:
-        ModelSerializer {serializer} -- Serializer for flights model
+        ModelSerializer {serializer} -- Serializer for flight model
     """
     class Meta:
         model = Flight

@@ -18,7 +18,6 @@ class RegisterView(APIView):
     Arguments:
         APIView {view} -- rest_framework API view
     """
-
     permission_classes = (AllowAny,)
 
     def post(self, request, format='json'):

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAdminUser, SAFE_METHODS
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, SAFE_METHODS
 
 from .models import Flight
 from .serializers import FlightSerializer
@@ -17,7 +17,12 @@ class IsAdminUserOrReadOnly(IsAdminUser):
 
 
 class FlightListView(APIView):
-    permission_classes = (IsAdminUserOrReadOnly,)
+    """Flight list view
+
+    Arguments:
+        APIView {view} -- rest_framework API view
+    """
+    permission_classes = (IsAuthenticated, IsAdminUserOrReadOnly)
 
     def post(self, request, format='json'):
         flight = request.data
@@ -38,3 +43,42 @@ class FlightListView(APIView):
             'error': serializer.errors
         },
         status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, format='json'):
+        flights = Flight.objects.all()
+        serializer = FlightSerializer(flights, many=True)
+
+        return Response({
+            'status': 'Success',
+            'message': 'Flights retrieved',
+            'data': serializer.data
+        },
+        status=status.HTTP_200_OK)
+
+
+class FlightDetailView(APIView):
+    """Flight detail view
+
+    Arguments:
+        APIView {view} -- rest_framework API view
+    """
+    permission_classes = (IsAuthenticated, IsAdminUserOrReadOnly)
+
+    def get(self, request, pk, format='json'):
+        try:
+            flight = Flight.objects.get(pk=pk)
+        except Flight.DoesNotExist:
+            return Response({
+                'status': 'Error',
+                'message': 'Flight not found'
+            },
+            status=status.HTTP_404_NOT_FOUND)
+
+        serializer = FlightSerializer(flight)
+
+        return Response({
+            'status': 'Success',
+            'message': 'Flight retrieved',
+            'data': serializer.data
+        },
+        status=status.HTTP_200_OK)
