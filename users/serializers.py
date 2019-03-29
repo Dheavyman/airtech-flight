@@ -1,10 +1,18 @@
 from rest_framework.serializers import ModelSerializer, CharField, ImageField
-from .models import User
 
+from .models import User
 from .helpers import validate_name
 
 
 class UserSerializer(ModelSerializer):
+    """User serializer
+
+    Arguments:
+        ModelSerializer {serializer} -- Serializer for Users model
+
+    Returns:
+        [type] -- [description]
+    """
     first_name = CharField(validators=[validate_name])
     last_name = CharField(validators=[validate_name])
     passport_photo = ImageField(required=False)
