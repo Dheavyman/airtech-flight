@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'djmoney',
+    'bookings',
     'flights',
     'users',
     'storages',
