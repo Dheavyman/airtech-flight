@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer, CharField, ImageField
 
+from api.helpers.validators import validate_name
 from .models import User
-from .helpers import validate_name
 
 
 class UserSerializer(ModelSerializer):

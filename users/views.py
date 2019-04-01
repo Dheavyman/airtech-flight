@@ -1,4 +1,3 @@
-from django.http import Http404
 from django.contrib.auth import authenticate
 from django.contrib.auth.signals import user_logged_in
 from rest_framework.views import APIView
@@ -6,9 +5,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 
+from api.helpers.auth import get_token
 from .models import User
 from .serializers import UserSerializer, ImageSerializer
-from .helpers import get_token
 
 
 class RegisterView(APIView):

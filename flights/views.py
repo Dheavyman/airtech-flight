@@ -1,9 +1,9 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, SAFE_METHODS
 
+from api.helpers.validators import validate_resource_exist
 from .models import Flight
 from .serializers import FlightSerializer
 
@@ -70,17 +70,10 @@ class FlightDetailView(APIView):
     """
     permission_classes = (IsAuthenticated, IsAdminUserOrReadOnly)
 
-    def get(self, request, pk, format='json'):
-        try:
-            flight = Flight.objects.get(pk=pk)
-        except Flight.DoesNotExist:
-            return Response({
-                'status': 'Error',
-                'message': 'Flight not found'
-            },
-            status=status.HTTP_404_NOT_FOUND)
-
-        serializer = FlightSerializer(flight)
+    @validate_resource_exist(Flight, 'flight')
+    def get(self, request, flight_pk, format='json', **kwargs):
+        instance = kwargs['flight']
+        serializer = FlightSerializer(instance)
 
         return Response({
             'status': 'Success',
@@ -89,17 +82,10 @@ class FlightDetailView(APIView):
         },
         status=status.HTTP_200_OK)
 
-    def put(self, request, pk, format='json'):
-        try:
-            flight = Flight.objects.get(pk=pk)
-        except Flight.DoesNotExist:
-            return Response({
-                'status': 'Error',
-                'message': 'Flight not found'
-            },
-            status=status.HTTP_404_NOT_FOUND)
-
-        serializer = FlightSerializer(flight, data=request.data, partial=True)
+    @validate_resource_exist(Flight, 'flight')
+    def put(self, request, flight_pk, format='json', **kwargs):
+        instance = kwargs['flight']
+        serializer = FlightSerializer(instance, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
@@ -117,17 +103,10 @@ class FlightDetailView(APIView):
         },
         status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, format='json'):
-        try:
-            flight = Flight.objects.get(pk=pk)
-        except Flight.DoesNotExist:
-            return Response({
-                'status': 'Error',
-                'message': 'Flight not found'
-            },
-            status=status.HTTP_404_NOT_FOUND)
-
-        flight.delete()
+    @validate_resource_exist(Flight, 'flight')
+    def delete(self, request, flight_pk, format='json', **kwargs):
+        instance = kwargs['flight']
+        instance.delete()
 
         return Response({
             'status': 'Success',

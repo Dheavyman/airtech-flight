@@ -10,7 +10,7 @@ class FlightSerializer(ModelSerializer):
     """Flight serializer
 
     Arguments:
-        ModelSerializer {serializer} -- Serializer for flight model
+        ModelSerializer {serializer} -- rest famework model serializer
     """
     class Meta:
         model = Flight
