@@ -11,7 +11,7 @@ class Booking(models.Model):
     flight_status = models.CharField(max_length=1,
                                      choices=[(choice.name, choice.value)
                                               for choice in StatusChoices],
-                                     default='B')
+                                     default=StatusChoices.B.name)
     created_at = models.DateTimeField(auto_now_add=True)
     reserved_at = models.DateTimeField(null=True)
     amount_paid = MoneyField(max_digits=19, decimal_places=2, default_currency='USD', default=0)
