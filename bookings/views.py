@@ -37,17 +37,6 @@ class BookingListView(APIView):
         },
         status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, format='json'):
-        bookings = Booking.objects.all()
-        serializer = TicketSerializer(bookings, many=True)
-
-        return Response({
-            'status': 'Success',
-            'message': 'Bookings retrieved',
-            'data': serializer.data
-        },
-        status=status.HTTP_200_OK)
-
 def generate_ticket_number():
     while True:
         unique_str = str(uuid4())[:6].upper()
