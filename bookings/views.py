@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,6 +17,7 @@ class BookingListView(APIView):
     def post(self, request, format='json'):
         booking = request.data
         booking['passenger_id'] = request.user.id
+        booking['ticket_number'] = generate_ticket_number()
         serializer = BookingSerializer(data=booking)
 
         if serializer.is_valid():
@@ -33,3 +36,21 @@ class BookingListView(APIView):
             'error': serializer.errors
         },
         status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, format='json'):
+        bookings = Booking.objects.all()
+        serializer = TicketSerializer(bookings, many=True)
+
+        return Response({
+            'status': 'Success',
+            'message': 'Bookings retrieved',
+            'data': serializer.data
+        },
+        status=status.HTTP_200_OK)
+
+def generate_ticket_number():
+    while True:
+        unique_str = str(uuid4())[:6].upper()
+        if not Booking.objects.filter(ticket_number=unique_str).exists():
+            break
+    return unique_str

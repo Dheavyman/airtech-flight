@@ -7,10 +7,11 @@ from flights.models import Flight
 
 
 class Booking(models.Model):
+    ticket_number = models.CharField(max_length=6, unique=True)
     flight_status = models.CharField(max_length=1,
                                      choices=[(choice.name, choice.value)
                                               for choice in StatusChoices],
-                                     default=StatusChoices.B)
+                                     default='B')
     created_at = models.DateTimeField(auto_now_add=True)
     reserved_at = models.DateTimeField(null=True)
     amount_paid = MoneyField(max_digits=19, decimal_places=2, default_currency='USD', default=0)
