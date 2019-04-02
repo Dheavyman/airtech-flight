@@ -19,7 +19,7 @@ class RegisterView(APIView):
     """
     permission_classes = (AllowAny,)
 
-    def post(self, request, format='json'):
+    def post(self, request, format=None):
         serializer = UserSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -52,7 +52,7 @@ class LoginView(APIView):
 
     permission_classes = (AllowAny,)
 
-    def post(self, request, format='json'):
+    def post(self, request, format=None):
         email = request.data.get('email')
         password = request.data.get('password')
 
@@ -89,7 +89,7 @@ class ProfilePhotoView(APIView):
     Arguments:
         APIView {view} -- rest_framework API view
     """
-    def put(self, request, pk, format='json'):
+    def put(self, request, pk, format=None):
         if request.user.id != pk:
             return Response({
                 'status': 'Error',
@@ -116,7 +116,7 @@ class ProfilePhotoView(APIView):
         },
         status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, format='json'):
+    def delete(self, request, pk, format=None):
         user = request.user
         if user.id != pk:
             return Response({

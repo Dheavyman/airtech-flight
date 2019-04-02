@@ -12,8 +12,6 @@ class BookingSerializer(ModelSerializer):
     Arguments:
         ModelSerializer {serializer} -- rest framework model serializer
     """
-    ticket_number = CharField(required=False)
-
     class Meta:
         model = Booking
         fields = '__all__'
