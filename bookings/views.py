@@ -1,11 +1,16 @@
 from uuid import uuid4
 
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from api.helpers.validators import validate_resource_exist
 from .models import Booking
-from .serializers import BookingSerializer, TicketSerializer, TicketStatusSerializer
+from .serializers import (BookingSerializer,
+                          TicketSerializer,
+                          TicketStatusSerializer,
+                          TicketReservationSerializer)
 from .tasks import email_ticket
 
 
@@ -67,6 +72,45 @@ class BookingListView(APIView):
             'data': serializer.data
         },
         status=status.HTTP_200_OK)
+
+
+class BookingDetailView(APIView):
+    """Booking detail view
+
+    Arguments:
+        APIView {view} -- rest_framework API view
+    """
+    @validate_resource_exist(Booking, 'booking')
+    def put(self, request, booking_pk, format=None, **kwargs):
+        instance = kwargs['booking']
+        if instance.flight_status == 'R':
+            return Response({
+                'status': 'Error',
+                'message': 'Flight already reserved'
+            },
+            status=status.HTTP_409_CONFLICT)
+
+        request.data['flight_status'] = 'R'
+        request.data['reserved_at'] = timezone.now()
+        serializer = TicketReservationSerializer(instance, data=request.data)
+
+        if serializer.is_valid():
+            instance = serializer.save()
+            ticket = TicketSerializer(instance)
+
+            return Response({
+                'status': 'Success',
+                'message': 'Flight reserved',
+                'data': ticket.data
+            },
+            status=status.HTTP_200_OK)
+
+        return Response({
+            'status': 'Error',
+            'message': 'Flight not reserved',
+            'error': serializer.errors
+        },
+        status=status.HTTP_400_BAD_REQUEST)
 
 def generate_ticket_number():
     while True:
