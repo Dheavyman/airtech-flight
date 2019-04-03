@@ -42,23 +42,22 @@ class BookingListView(APIView):
     def get(self, request, format=None):
         ticket = TicketStatusSerializer(data=request.query_params)
 
-        if ticket.is_valid():
-            try:
-                booking = Booking.objects.get(ticket_number=ticket.data['ticket_number'],
-                                              passenger_id=request.user)
-            except Booking.DoesNotExist:
-                return Response({
-                    'status': 'Error',
-                    'message': 'Ticket not found'
-                },
-                status=status.HTTP_404_NOT_FOUND)
-        else:
+        if not ticket.is_valid():
             return Response({
                 'status': 'Error',
                 'message': 'Provide ticket number in query params as ?ticket=<ticket_number>',
             },
             status=status.HTTP_404_NOT_FOUND)
 
+        try:
+            booking = Booking.objects.get(ticket_number=ticket.data['ticket_number'],
+                                            passenger_id=request.user)
+        except Booking.DoesNotExist:
+            return Response({
+                'status': 'Error',
+                'message': 'Ticket not found'
+            },
+            status=status.HTTP_404_NOT_FOUND)
 
         serializer = TicketSerializer(booking)
 
