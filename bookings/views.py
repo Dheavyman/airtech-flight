@@ -6,6 +6,7 @@ from rest_framework import status
 
 from .models import Booking
 from .serializers import BookingSerializer, TicketSerializer
+from .tasks import email_ticket
 
 
 class BookingListView(APIView):
@@ -14,7 +15,7 @@ class BookingListView(APIView):
     Arguments:
         APIView {view} -- rest_framework API view
     """
-    def post(self, request, format='json'):
+    def post(self, request, format=None):
         booking = request.data
         booking['passenger_id'] = request.user.id
         booking['ticket_number'] = generate_ticket_number()
@@ -23,6 +24,7 @@ class BookingListView(APIView):
         if serializer.is_valid():
             new_booking = serializer.save()
             ticket = TicketSerializer(new_booking)
+            email_ticket.delay(ticket.data)
 
             return Response({
                 'status': 'Success',

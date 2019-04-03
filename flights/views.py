@@ -30,7 +30,7 @@ class FlightListView(APIView):
     """
     permission_classes = (IsAuthenticated, IsAdminUserOrReadOnly)
 
-    def post(self, request, format='json'):
+    def post(self, request, format=None):
         flight = request.data
         flight['created_by'] = request.user.id
         serializer = FlightSerializer(data=flight)
@@ -50,7 +50,7 @@ class FlightListView(APIView):
         },
         status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, format='json'):
+    def get(self, request, format=None):
         flights = Flight.objects.all()
         serializer = FlightSerializer(flights, many=True)
 
@@ -71,7 +71,7 @@ class FlightDetailView(APIView):
     permission_classes = (IsAuthenticated, IsAdminUserOrReadOnly)
 
     @validate_resource_exist(Flight, 'flight')
-    def get(self, request, flight_pk, format='json', **kwargs):
+    def get(self, request, flight_pk, format=None, **kwargs):
         instance = kwargs['flight']
         serializer = FlightSerializer(instance)
 
@@ -83,7 +83,7 @@ class FlightDetailView(APIView):
         status=status.HTTP_200_OK)
 
     @validate_resource_exist(Flight, 'flight')
-    def put(self, request, flight_pk, format='json', **kwargs):
+    def put(self, request, flight_pk, format=None, **kwargs):
         instance = kwargs['flight']
         serializer = FlightSerializer(instance, data=request.data, partial=True)
 
@@ -104,7 +104,7 @@ class FlightDetailView(APIView):
         status=status.HTTP_400_BAD_REQUEST)
 
     @validate_resource_exist(Flight, 'flight')
-    def delete(self, request, flight_pk, format='json', **kwargs):
+    def delete(self, request, flight_pk, format=None, **kwargs):
         instance = kwargs['flight']
         instance.delete()
 
