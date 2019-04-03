@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .models import Booking
-from .serializers import BookingSerializer, TicketSerializer
+from .serializers import BookingSerializer, TicketSerializer, TicketStatusSerializer
 from .tasks import email_ticket
 
 
@@ -38,6 +38,35 @@ class BookingListView(APIView):
             'error': serializer.errors
         },
         status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, format=None):
+        ticket = TicketStatusSerializer(data=request.query_params)
+
+        if not ticket.is_valid():
+            return Response({
+                'status': 'Error',
+                'message': 'Provide ticket number in query params as ?ticket=<ticket_number>',
+            },
+            status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            booking = Booking.objects.get(ticket_number=ticket.data['ticket_number'],
+                                            passenger_id=request.user)
+        except Booking.DoesNotExist:
+            return Response({
+                'status': 'Error',
+                'message': 'Ticket not found'
+            },
+            status=status.HTTP_404_NOT_FOUND)
+
+        serializer = TicketSerializer(booking)
+
+        return Response({
+            'status': 'Success',
+            'message': 'Booking retrieved',
+            'data': serializer.data
+        },
+        status=status.HTTP_200_OK)
 
 def generate_ticket_number():
     while True:

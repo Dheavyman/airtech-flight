@@ -43,3 +43,16 @@ class TicketSerializer(ModelSerializer):
     class Meta:
         model = Booking
         exclude = ('flight_id', 'passenger_id')
+
+
+class TicketStatusSerializer(ModelSerializer):
+    """Ticket status serializer
+
+    Arguments:
+        ModelSerializer {serializer} -- rest framework model serializer
+    """
+    ticket = CharField(write_only=True, source='ticket_number')
+    ticket_number = CharField(read_only=True)
+    class Meta:
+        model = Booking
+        fields = ('ticket_number', 'ticket')
