@@ -13,7 +13,21 @@ def email_ticket(ticket):
     from_email = settings.EMAIL_HOST_USER
     to_email = ticket['passenger']['email']
 
-    content_html = render_to_string('bookings/ticket.html', { 'ticket': ticket})
+    content_html = render_to_string('bookings/ticket.html', { 'ticket': ticket })
+    content_text = strip_tags(content_html)
+
+    message = EmailMultiAlternatives(subject, content_text, from_email, [to_email])
+    message.attach_alternative(content_html, 'text/html')
+    message.send()
+
+@shared_task
+def email_reservation(ticket):
+    flight_destination = ticket['flight']['destination']
+    subject = f'eTicket - Flight to {flight_destination} Reserved'
+    from_email = settings.EMAIL_HOST_USER
+    to_email = ticket['passenger']['email']
+
+    content_html = render_to_string('bookings/confirmation.html', { 'ticket': ticket })
     content_text = strip_tags(content_html)
 
     message = EmailMultiAlternatives(subject, content_text, from_email, [to_email])

@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, CharField
+from rest_framework.serializers import ModelSerializer, CharField, ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 
 from users.serializers import UserSerializer
@@ -53,6 +53,25 @@ class TicketStatusSerializer(ModelSerializer):
     """
     ticket = CharField(write_only=True, source='ticket_number')
     ticket_number = CharField(read_only=True)
+
     class Meta:
         model = Booking
         fields = ('ticket_number', 'ticket')
+
+
+class TicketReservationSerializer(ModelSerializer):
+    """Ticket reservation serializer
+
+    Arguments:
+        ModelSerializer {serializer} -- rest framework model serializer
+    """
+    class Meta:
+        model = Booking
+        fields = ('flight_status', 'amount_paid', 'reserved_at')
+
+    def validate(self, data):
+        if not 'amount_paid' in data:
+            raise ValidationError('Field amount paid is required')
+        if data['amount_paid'] != self.instance.flight_id.flight_cost.amount:
+            raise ValidationError('Amount paid is not equal to the flight cost')
+        return data

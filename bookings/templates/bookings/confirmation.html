@@ -2,14 +2,12 @@
 {% load bookings_filters %}
 
 {% block content %}
-  <p>Your flight has been ticketed</p>
+  <p>Your flight to {{ ticket.flight.destination }} has been reserved</p>
   <br>
-  <p>Flight: {{ ticket.flight.flight_number }}</p>
   <p>Ticket number: <strong>{{ ticket.ticket_number }}</strong></p>
   <p>Flight status: {{ ticket.flight_status }}</p>
-  <p>From: {{ ticket.flight.departing }}</p>
+  <p>Date reserved: <strong>{{ ticket.reserved_at|ctime }}</strong> {{ ticket.reserved_at|cdate }}</p>
   <p>Departure time: <strong>{{ ticket.flight.departure_datetime|ctime }}</strong> {{ ticket.flight.departure_datetime|cdate }}</p>
-  <p>To: {{ ticket.flight.destination }}</p>
   <p>Arrival time: <strong>{{ ticket.flight.arrival_datetime|ctime }}</strong> {{ ticket.flight.arrival_datetime|cdate }}</p>
   <p>Passenger name: {{ ticket.passenger.first_name }} {{ ticket.passenger.last_name }}</p>
   <br>
