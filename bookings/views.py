@@ -11,7 +11,7 @@ from .serializers import (BookingSerializer,
                           TicketSerializer,
                           TicketStatusSerializer,
                           TicketReservationSerializer)
-from .tasks import email_ticket
+from .tasks import email_ticket, email_reservation
 
 
 class BookingListView(APIView):
@@ -97,6 +97,7 @@ class BookingDetailView(APIView):
         if serializer.is_valid():
             instance = serializer.save()
             ticket = TicketSerializer(instance)
+            email_reservation.delay(ticket.data)
 
             return Response({
                 'status': 'Success',

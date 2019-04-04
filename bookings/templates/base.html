@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Ticket</title>
+</head>
+<body>
+    <div class="container">
+      <h4>Dear {{ ticket.passenger.first_name }},</h4>
+      <p>Thank you for choosing Airtech Flight.</p>
+      {% block content %}
+      {% endblock %}
+      <p>Best regards,</p>
+      <p>Airtech Flight</p>
+    </div>
+</body>
+</html>
