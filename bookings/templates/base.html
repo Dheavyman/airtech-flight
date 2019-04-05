@@ -8,12 +8,18 @@
 </head>
 <body>
     <div class="container">
-      <h4>Dear {{ ticket.passenger.first_name }},</h4>
+      {% if ticket.passenger.first_name %}
+        <h4>Dear {{ ticket.passenger.first_name }},</h4>
+      {% elif passenger %}
+        <h4>Dear {{ passenger|first }}</h4>
+      {% else %}
+        <h4>Hi</h4>
+      {% endif %}
       <p>Thank you for choosing Airtech Flight.</p>
       {% block content %}
       {% endblock %}
       <p>Best regards,</p>
-      <p>Airtech Flight</p>
+      <p>Airtech Flight.</p>
     </div>
 </body>
 </html>

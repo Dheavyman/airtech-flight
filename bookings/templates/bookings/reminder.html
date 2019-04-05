@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load bookings_filters %}
+
+{% block content %}
+  <p>This is a reminder for your flight to {{ destination }}.</p>
+  <br>
+  <p>Ticket number: <strong>{{ ticket_number }}</strong></p>
+  <p>Departure time: <strong>{{ departure_datetime|ctime }}</strong> {{ departure_datetime|cdate }}</p>
+  <p>Departure airport: {{ departure_airport }}</p>
+  <p>Arrival time: <strong>{{ arrival_datetime|ctime }}</strong> {{ arrival_datetime|cdate }}</p>
+  <p>Destination airport: {{ destination_airport }}</p>
+  <p>Passenger name: {{ passenger|first }} {{ passenger|last }}</p>
+  <br>
+{% endblock %}
