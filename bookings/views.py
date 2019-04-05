@@ -6,11 +6,13 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.helpers.validators import validate_resource_exist
+from api.helpers.utils import StatusChoices
 from .models import Booking
 from .serializers import (BookingSerializer,
                           TicketSerializer,
                           TicketStatusSerializer,
-                          TicketReservationSerializer)
+                          TicketReservationSerializer,
+                          BookingReservationsSerializer)
 from .tasks import email_ticket, email_reservation
 
 
@@ -39,39 +41,98 @@ class BookingListView(APIView):
             status=status.HTTP_201_CREATED)
         return Response({
             'status': 'Error',
-            'message': 'Could not create the flight',
+            'message': 'Could not book the flight',
             'error': serializer.errors
         },
         status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, format=None):
-        ticket = TicketStatusSerializer(data=request.query_params)
+        params = request.query_params.copy()
+        if params:
+            # Check that the query params contain only supported keys
+            keys = [key for key in params.keys()]
+            invalid_keys = list(
+                filter(lambda key: key not in ('ticket', 'flight', 'date', 'status'), keys))
+            if invalid_keys:
+                return Response({
+                    'status': 'Error',
+                    'message': f'Invalid query params - {", ".join(invalid_keys)}'
+                },
+                status=status.HTTP_400_BAD_REQUEST)
+            if not 'ticket' in keys and len(keys) == 3:
+                # Handle search for bookings based on flight
+                # date and status of the flight bookings
+                params['status'] = params['status'].title()
+                reservations = BookingReservationsSerializer(data=params)
+                if not reservations.is_valid():
+                    return Response({
+                        'status': 'Error',
+                        'message': 'Provide valid query parameters',
+                        'error': reservations.errors
+                    },
+                    status=status.HTTP_400_BAD_REQUEST)
 
-        if not ticket.is_valid():
-            return Response({
-                'status': 'Error',
-                'message': 'Provide ticket number in query params as ?ticket=<ticket_number>',
-            },
-            status=status.HTTP_404_NOT_FOUND)
+                flight_id = params.get('flight')
+                flight_status = StatusChoices(params.get('status').title()).name
+                date = params.get('date')
+                # Handle booked or reserved date based on status passed
+                date_condition = {}
+                if flight_status == 'R':
+                    date_condition['reserved_at__date__lte'] = date
+                elif flight_status == 'B':
+                    date_condition['created_at__date__lte'] = date
+                bookings = Booking.objects.filter(flight_id=flight_id,
+                                                  flight_status=flight_status,
+                                                  **date_condition)
+                serializer = BookingReservationsSerializer(bookings, many=True)
 
-        try:
-            booking = Booking.objects.get(ticket_number=ticket.data['ticket_number'],
-                                            passenger_id=request.user)
-        except Booking.DoesNotExist:
-            return Response({
-                'status': 'Error',
-                'message': 'Ticket not found'
-            },
-            status=status.HTTP_404_NOT_FOUND)
+                return Response({
+                    'status': 'Success',
+                    'message': 'Flight retrieved',
+                    'data': {
+                        'count': bookings.count(),
+                        'reservations': serializer.data
+                    }
+                },
+                status=status.HTTP_200_OK)
+            elif 'ticket' in keys and len(keys) == 1:
+                # Handle checking of user flight status
+                # Users can only check the status of a flight booking they placed
+                ticket = TicketStatusSerializer(data=params)
 
-        serializer = TicketSerializer(booking)
+                if not ticket.is_valid():
+                    return Response({
+                        'status': 'Error',
+                        'message': 'Invalid ticket number',
+                        'error': ticket.errors
+                    },
+                    status=status.HTTP_404_NOT_FOUND)
 
-        return Response({
-            'status': 'Success',
-            'message': 'Booking retrieved',
-            'data': serializer.data
-        },
-        status=status.HTTP_200_OK)
+                try:
+                    booking = Booking.objects.get(ticket_number=ticket.data['ticket_number'],
+                                                  passenger_id=request.user)
+                except Booking.DoesNotExist:
+                    return Response({
+                        'status': 'Error',
+                        'message': 'Ticket not found or you don\'t have the permission to view it'
+                    },
+                    status=status.HTTP_404_NOT_FOUND)
+
+                serializer = TicketSerializer(booking)
+
+                return Response({
+                    'status': 'Success',
+                    'message': 'Booking retrieved',
+                    'data': serializer.data
+                },
+                status=status.HTTP_200_OK)
+            else:
+                # Return error message if no valid query params combination is passed
+                return Response({
+                    'status': 'Error',
+                    'message': 'Unsupported query params combination'
+                },
+                status=status.HTTP_400_BAD_REQUEST)
 
 
 class BookingDetailView(APIView):
