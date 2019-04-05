@@ -9,6 +9,6 @@
   <p>Departure airport: {{ departure_airport }}</p>
   <p>Arrival time: <strong>{{ arrival_datetime|ctime }}</strong> {{ arrival_datetime|cdate }}</p>
   <p>Destination airport: {{ destination_airport }}</p>
-  <p>Passenger name: {{ passenger }}</p>
+  <p>Passenger name: {{ passenger|first }} {{ passenger|last }}</p>
   <br>
 {% endblock %}
