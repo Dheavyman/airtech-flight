@@ -44,7 +44,7 @@ def email_reservation(ticket):
 
 @periodic_task(
     name='email_travel_reminder',
-    run_every=crontab(minute=0, hour=7),
+    run_every=crontab(minute=0, hour=7), # 07:00 AM every day
     ignore_result=True
 )
 def email_travel_reminder():
