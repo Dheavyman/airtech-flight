@@ -106,15 +106,14 @@ class BookingListView(APIView):
                         'message': 'Invalid ticket number',
                         'error': ticket.errors
                     },
-                    status=status.HTTP_404_NOT_FOUND)
+                    status=status.HTTP_400_BAD_REQUEST)
 
                 try:
-                    booking = Booking.objects.get(ticket_number=ticket.data['ticket_number'],
-                                                  passenger_id=request.user)
+                    booking = Booking.objects.get(ticket_number=ticket.data['ticket_number'])
                 except Booking.DoesNotExist:
                     return Response({
                         'status': 'Error',
-                        'message': 'Ticket not found or you don\'t have the permission to view it'
+                        'message': 'Ticket not found'
                     },
                     status=status.HTTP_404_NOT_FOUND)
 
@@ -130,7 +129,7 @@ class BookingListView(APIView):
                 # Return error message if no valid query params combination is passed
                 return Response({
                     'status': 'Error',
-                    'message': 'Unsupported query params combination'
+                    'message': 'Unsupported query params combination: provide flight, date and status'
                 },
                 status=status.HTTP_400_BAD_REQUEST)
 
@@ -144,6 +143,14 @@ class BookingDetailView(APIView):
     @validate_resource_exist(Booking, 'booking')
     def put(self, request, booking_pk, format=None, **kwargs):
         instance = kwargs['booking']
+
+        if instance.passenger_id != request.user:
+            return Response({
+                'status': 'Error',
+                'message': 'You have not booked this flight'
+            },
+            status=status.HTTP_400_BAD_REQUEST)
+
         if instance.flight_status == 'R':
             return Response({
                 'status': 'Error',
