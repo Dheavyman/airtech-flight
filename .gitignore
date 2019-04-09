@@ -1,5 +1,7 @@
 .vscode/
 .env
+.coverage
 venv/
 __pycache__/
 celerybeat-schedule
+htmlcov

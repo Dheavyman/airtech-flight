@@ -4,7 +4,7 @@ from celery import Celery
 from django.conf import settings
 
 # set the default Django settings module for the 'celery' program.
-if os.getenv('ENV') == 'production':
+if os.getenv('DJANGO_ENV') == 'production':
     api_settings = 'api.settings.production'
 else:
     api_settings = 'api.settings.development'

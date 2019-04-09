@@ -121,7 +121,7 @@ class ProfilePhotoView(APIView):
         if user.id != pk:
             return Response({
                 'status': 'Error',
-                'message': 'Request forbidden, not users passport photo'
+                'message': 'Request forbidden, not users profile'
             },
             status=status.HTTP_403_FORBIDDEN)
 
