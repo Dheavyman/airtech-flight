@@ -4,6 +4,11 @@ from ..models import User
 
 
 class UserModelTest(TestCase):
+    """Test user model
+
+    Arguments:
+        TestCase {TestCase} -- django TestCase class
+    """
     def test_user_creation_without_email(self):
         with self.assertRaisesMessage(ValueError, 'Users must have an email address'):
             User.objects.create_user(
