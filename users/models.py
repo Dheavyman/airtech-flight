@@ -4,7 +4,7 @@ from django.core.validators import RegexValidator
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, first_name, last_name, password=None):
+    def create_user(self, email, first_name, last_name, password=None, **kwargs):
         """
         Creates and saves a User with the given email and password.
         """
