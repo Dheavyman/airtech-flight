@@ -6,6 +6,11 @@ from ..forms import UserCreationForm, UserChangeForm
 
 
 class UserCreationFormTest(TestCase):
+    """User creation form test class
+
+    Arguments:
+        TestCase {TestCase} -- django TestCase class
+    """
     def test_create_user_form_with_noncomfirmed_password(self):
         data = {
             'email': 'user@example.com',
@@ -50,6 +55,11 @@ class UserCreationFormTest(TestCase):
 
 
 class UserChangeFormTest(TestCase):
+    """User change form test class
+
+    Arguments:
+        TestCase {TestCase} -- django TestCase class
+    """
     def test_change_user_form_with_valid_data(self):
         user = User.objects.create(
             email='user@example.com',

@@ -28,7 +28,6 @@ class BaseViewTest(APITestCase):
     Arguments:
         APITestCase {APITestCase} -- rest_framework APITestCase class
     """
-
     client = APIClient()
 
     def setUp(self):
@@ -67,7 +66,6 @@ class ProfilePhotoBaseViewTest(BaseViewTest):
     Arguments:
         BaseViewTest {APITestCase} -- BaseViewTest class
     """
-
     token = []
 
     def setUp(self):
@@ -91,7 +89,6 @@ class RegisterViewTest(BaseViewTest):
     Arguments:
         BaseViewTest {APITestCase} -- BaseViewTest class
     """
-
     def test_register_user_with_incomplete_data(self):
         incomplete_user_data = {}
         response = self.client.post(reverse('create_account'), incomplete_user_data, format='json')
@@ -184,7 +181,6 @@ class LoginViewTest(BaseViewTest):
     Arguments:
         BaseViewTest {APITestCase} -- BaseViewTest class
     """
-
     def test_login_with_incomplete_credentials(self):
         without_password = {
             'email': 'user@example.com'
@@ -235,7 +231,6 @@ class ProfilePhotoViewTest(ProfilePhotoBaseViewTest):
     Arguments:
         ProfilePhotoBaseViewTest {APITestCase} -- ProfilePhotoBaseViewTest class
     """
-
     def test_passport_photo_upload_without_token(self):
         user = User.objects.get(email='user@example.com')
         response = self.client.put(reverse('profile_photo', kwargs={'pk': user.id}),
