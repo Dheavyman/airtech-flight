@@ -6,3 +6,4 @@ omit =
     utils.py
     manage.py
     */migrations/*
+    */apps.py
