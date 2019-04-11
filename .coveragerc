@@ -2,7 +2,7 @@
 branch = True
 omit =
     venv/*
-    api/*
+    api/celery.py
     utils.py
     manage.py
     */migrations/*
