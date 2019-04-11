@@ -9,6 +9,7 @@ Airtech-flight is an application for managing flight booking system.
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [API Documentation](#api-documentation)
+- [Running the tests](#running-the-tests)
 - [Built With](#built-with)
 - [License](#license)
 - [Credits](#credits)
@@ -70,10 +71,30 @@ Second terminal:
 ## API Documentation
 The API documentation can be found [here](https://documenter.getpostman.com/view/4545805/S1EJY1y2)
 
+## Running the tests
+* Create a virtual environment and activate it with the commands(this is done from the root of the application):  
+```
+   > $ python3 -m venv venv
+   > $ source venv/bin/activate
+```
+* Install the dependencies with the command:  
+`> $ pip install -r requirements.txt`
+* Set the following environment variables in the .env file:  
+  * DJANGO_ENV=development
+  * SECRETE_KEY=your_secret
+
+* Run the test with the command  
+`> $ coverage run manage.py test`
+
+* Check the coverage report with the command  
+`> $ coverage report`
+
 ## Built with
 * Django
 * Django REST framework
 * Postgresql
+* Celery
+* RabbitMQ
 
 ## License
 This project is available for use and modification under the MIT License. See the LICENSE file or click [here](https://github.com/Dheavyman/airtech-flight/blob/develop/LICENSE.md) for more details.
