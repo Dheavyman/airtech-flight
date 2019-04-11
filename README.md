@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/Dheavyman/airtech-flight/badge.svg?branch=develop)](https://coveralls.io/github/Dheavyman/airtech-flight?branch=develop)
+
 # Airtech-flight
 Airtech-flight is an application for managing flight booking system.
 
