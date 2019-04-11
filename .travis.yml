@@ -15,4 +15,3 @@ branches:
   only:
     - develop
     - ch-integrate-travis-165279099
-
