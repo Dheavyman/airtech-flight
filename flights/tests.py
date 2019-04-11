@@ -79,6 +79,11 @@ class BaseViewTest(APITestCase):
 
 
 class BaseDetailViewTest(BaseViewTest):
+    """Base detail view test class
+
+    Arguments:
+        BaseViewTest {APITestCase} -- BaseViewTest class
+    """
     def setUp(self):
         super().setUp()
 
@@ -255,16 +260,17 @@ class FlightDetailViewTest(BaseDetailViewTest):
             'flight_cost': 280,
             'created_by': self.admin.id
         })
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token[0]}')
-        response = self.client.put(reverse('flight_detail', kwargs={'flight_pk': self.flight_1.id}),
-                                   self.flight_data[0],
-                                   format='json')
-        data = response.data
+        with patch('django.utils.timezone.now', return_value=self.MOCK_NOW):
+            self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token[0]}')
+            response = self.client.put(reverse('flight_detail', kwargs={'flight_pk': self.flight_1.id}),
+                                    self.flight_data[0],
+                                    format='json')
+            data = response.data
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data['status'], 'Success')
-        self.assertEqual(data['message'], 'Flight updated')
-        self.assertEqual(data['data']['flight_cost'], '280.00')
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(data['status'], 'Success')
+            self.assertEqual(data['message'], 'Flight updated')
+            self.assertEqual(data['data']['flight_cost'], '280.00')
 
     def test_edit_non_existing_flight(self):
         self.flight_data[0].update({
