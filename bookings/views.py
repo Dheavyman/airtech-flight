@@ -97,7 +97,7 @@ class BookingListView(APIView):
                 status=status.HTTP_200_OK)
             elif 'ticket' in keys and len(keys) == 1:
                 # Handle checking of user flight status
-                # Users can only check the status of a flight booking they placed
+                # Users can check the status of any flight booking
                 ticket = TicketStatusSerializer(data=params)
 
                 if not ticket.is_valid():

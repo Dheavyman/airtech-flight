@@ -79,6 +79,11 @@ class BaseViewTest(APITestCase):
 
 
 class BaseDetailViewTest(BaseViewTest):
+    """Base detail view test class
+
+    Arguments:
+        BaseViewTest {APITestCase} -- BaseViewTest class
+    """
     def setUp(self):
         super().setUp()
 

@@ -7,3 +7,5 @@ omit =
     manage.py
     */migrations/*
     */apps.py
+    */tasks.py
+    */templatetags/*
