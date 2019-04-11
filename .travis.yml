@@ -8,7 +8,7 @@ install:
   - pip install -r requirements.txt
   - pip install coveralls
 script:
-  - coverage run --source=api,users,flights,bookings manage.py test --parallel
+  - coverage run --source=api,users,flights,bookings manage.py test
 after_success:
   - coveralls
 branches:
