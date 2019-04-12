@@ -3,6 +3,8 @@ branch = True
 omit =
     venv/*
     api/celery.py
+    api/wsgi.py
+    api/settings/*
     utils.py
     manage.py
     */migrations/*

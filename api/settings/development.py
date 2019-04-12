@@ -1,8 +1,5 @@
 from .base import *
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -10,10 +7,6 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
-JWT_AUTH.update({
-    'JWT_SECRET_KEY': SECRET_KEY,
-})
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -28,3 +21,6 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
+
+# Celery configuration
+CELERY_BROKER_URL = 'amqp://localhost'

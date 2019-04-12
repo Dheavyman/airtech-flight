@@ -2,8 +2,18 @@
 import os
 import sys
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+if os.getenv('DJANGO_ENV') == 'production':
+    settings = 'api.settings.production'
+else:
+    settings = 'api.settings.development'
+
 if __name__ == '__main__':
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings.development')
+
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings)
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
