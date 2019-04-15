@@ -4,6 +4,7 @@ omit =
     venv/*
     api/celery.py
     api/wsgi.py
+    api/views.py
     api/settings/*
     utils.py
     manage.py

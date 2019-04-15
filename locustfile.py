@@ -38,6 +38,8 @@ class UserBookFlight(TaskSet):
             'Authorization': f'Bearer {self.token}'
         })
 
+    # TODO: Test put methods which are idempotent
+
 
 class ApplicationUser(HttpLocust):
     task_set = UserBookFlight
