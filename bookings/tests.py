@@ -217,6 +217,15 @@ class BookingListViewTest(BaseViewTest):
         self.assertEqual(data['message'], 'Booking retrieved')
         self.assertEqual(data['data']['ticket_number'], booking.data['data']['ticket_number'])
 
+    def test_get_flight_reservations_without_query_params(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token[1]}')
+        response = self.client.get(reverse('booking_list'))
+        data = response.data
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data['status'], 'Error')
+        self.assertEqual(data['message'], 'Query params required')
+
     def test_get_flight_reservations_with_wrong_query_params(self):
         query_params = {
             'ticket': 'FT533F',

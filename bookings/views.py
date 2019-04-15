@@ -132,6 +132,12 @@ class BookingListView(APIView):
                     'message': 'Unsupported query params combination: provide flight, date and status'
                 },
                 status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({
+                'status': 'Error',
+                'message': 'Query params required'
+            },
+            status=status.HTTP_400_BAD_REQUEST)
 
 
 class BookingDetailView(APIView):
