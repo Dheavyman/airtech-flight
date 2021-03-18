@@ -15,7 +15,7 @@ docutils==0.14
 gunicorn==19.9.0
 jmespath==0.9.4
 kombu==4.5.0
-Pillow==5.4.1
+Pillow==8.1.1
 psycopg2==2.7.7
 py-moneyed==0.8.0
 PyJWT==1.7.1
